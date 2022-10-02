@@ -2,7 +2,7 @@ project('graph-visualization', 'cpp',
   version : '0.1',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
-catch2_lib = subproject('catch2').get_variable('catch2_with_main_dep')
+catch2_lib = subproject('catch2').get_variable('catch2_dep')
 
 incdir = include_directories('include')
 subdir('src')

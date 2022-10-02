@@ -1,6 +1,7 @@
 src_files = files(
     'maze.cpp',
-    'maze_test.cpp'
+    'maze_test.cpp',
+    'maze_test_constructor.cpp'
 )
 
 maze_test = executable('maze_test',

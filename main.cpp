@@ -7,8 +7,7 @@
 
 int main() {
     auto maze = Maze(1);
-
+    maze.debug_print();
     
-
     return 0;
 }

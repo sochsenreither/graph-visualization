@@ -6,19 +6,19 @@
 #define MAZE_MAZE_H
 
 #include <array>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 const auto HEIGHT = 4;
 const auto WIDTH = 4;
 
 struct Node {
-    int id{};               /// Id of the field.
-    int x{};                /// X coordinate of the field.
-    int y{};                /// Y coordinate of the field.
-    bool passable{true};    /// True if one can enter the field.
-    bool start{false};      /// True if the field is the starting point.
-    bool end{false};        /// True if the field is the end point.
+    int id{};             /// Id of the field.
+    int x{};              /// X coordinate of the field.
+    int y{};              /// Y coordinate of the field.
+    bool passable{true};  /// True if one can enter the field.
+    bool start{false};    /// True if the field is the starting point.
+    bool end{false};      /// True if the field is the end point.
 
     /**
      * Prints every value of the field to stdout.
@@ -30,12 +30,18 @@ struct Node {
  * Maze data structure implemented with a grid of fields.
  */
 class Maze {
-private:
+   private:
     std::array<std::array<Node, HEIGHT>, WIDTH> maze;
-    std::vector<Node> get_neighbors(const Node& node);
 
-public:
-    Node start;    /// Starting point of the maze.
+   public:
+    Node start;  /// Starting point of the maze.
+
+    /**
+     * Returns a vector with all neighbots
+     *
+     * @param node The node whose neighbors we want to get.
+     */
+    std::vector<Node> get_neighbors(const Node& node);
 
     /**
      * Returns a maze with random start and end points.
@@ -110,4 +116,4 @@ public:
     std::tuple<std::vector<Node>, std::vector<Node>> a_star(const Node& s);
 };
 
-#endif //MAZE_MAZE_H
+#endif  // MAZE_MAZE_H
