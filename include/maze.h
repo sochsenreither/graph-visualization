@@ -3,6 +3,7 @@
 
 #include <tuple>
 #include <vector>
+#include <list>
 
 auto const HEIGHT = 10;
 auto const WIDTH = 10;
@@ -31,7 +32,7 @@ class Maze {
 
    public:
     Node start;  /// Starting point of the maze.
-    std::vector<std::vector<Node>> maze; 
+    std::vector<std::vector<Node>> maze;
 
     /**
      * Returns a vector with all neighbots
@@ -62,50 +63,45 @@ class Maze {
      *
      * See also https://en.wikipedia.org/wiki/Breadth-first_search.
      *
-     * @param s The starting point for the algorithm.
-     * @return Every field in the order it was visited.
+     * @return Every node in the order it was visited.
      */
-    std::vector<Node> bfs(const Node& s);
+    std::list<Node> bfs();
 
     /**
      * Find the end point in the maze with depth first search.
      *
      * See also https://en.wikipedia.org/wiki/Depth-first_search.
      *
-     * @param s The starting point for the algorithm.
-     * @return Every field in the order it was visited.
+     * @return Every node in the order it was visited.
      */
-    std::vector<Node> dfs(const Node& s);
+    std::list<Node> dfs();
 
     /**
      * Find the shortest path to the end point of the maze with dijkstra's algorithm.
      *
      * See also https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm.
      *
-     * @param s The starting point for the algorithm.
-     * @return Two vectors, one containing every visited node and one the shortest path.
+     * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::vector<Node>, std::vector<Node>> dijkstra(const Node& s);
+    std::tuple<std::list<Node>, std::list<Node>> dijkstra();
 
     /**
      * Find the shortest path to the end point of the maze with the Bellman-Ford algorithm.
      *
      * See also https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm.
      *
-     * @param s The starting point for the algorithm.
-     * @return Two vectors, one containing every visited node and one the shortest path.
+     * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::vector<Node>, std::vector<Node>> bellman_ford(const Node& s);
+    std::tuple<std::list<Node>, std::list<Node>> bellman_ford();
 
     /**
      * Find the shortest path to the end point of the maze with the A* algorithm.
      *
      * See also https://en.wikipedia.org/wiki/A*_search_algorithm.
      *
-     * @param s The starting point for the algorithm.
-     * @return Two vectors, one containing every visited node and one the shortest path.
+     * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::vector<Node>, std::vector<Node>> a_star(const Node& s);
+    std::tuple<std::list<Node>, std::list<Node>> a_star();
 };
 
 #endif  // MAZE_MAZE_H

@@ -39,7 +39,7 @@ TEST_CASE("Maze with obstacles", "[maze]") {
     maze.maze[2][2].passable = false;
     maze.maze[0][3].passable = false;
 
-    auto neighbors = maze.get_neighbors(maze.start);
+    auto const neighbors = maze.get_neighbors(maze.start);
 
     REQUIRE(neighbors.size() == 1);
 }
@@ -57,7 +57,7 @@ TEST_CASE("Maze without ostacles", "[maze]") {
     maze.maze[2][2].end = true;
     maze.start = maze.maze[1][1];
 
-    auto neighbors = maze.get_neighbors(maze.start);
+    auto const neighbors = maze.get_neighbors(maze.start);
 
     REQUIRE(neighbors.size() == 4);
 }
@@ -77,12 +77,12 @@ TEST_CASE("Maze with end next to start", "[maze]") {
     maze.start = maze.maze[0][0];
 
     SECTION("dfs") {
-        auto dfs_res = maze.dfs(maze.start);
+        auto const dfs_res = maze.dfs();
         REQUIRE(dfs_res.size() == 2);
     }
 
     SECTION("dfs") {
-        auto bfs_res = maze.bfs(maze.start);
+        auto const bfs_res = maze.bfs();
         REQUIRE(bfs_res.size() == 2);
     }
 }
@@ -103,12 +103,12 @@ TEST_CASE("BFS and DFS test", "[maze]") {
     maze.start = maze.maze[2][1];
 
     SECTION("dfs") {
-        auto dfs_res = maze.dfs(maze.start);
+        auto const dfs_res = maze.dfs();
         REQUIRE(dfs_res.size() > 3);
     }
 
     SECTION("dfs") {
-        auto bfs_res = maze.bfs(maze.start);
+        auto const bfs_res = maze.bfs();
         REQUIRE(bfs_res.size() == 2);
     }
 }

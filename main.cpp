@@ -1,8 +1,8 @@
 #include "engine.h"
 
 int main() {
-    Engine e;
-    e.debug_print();
+    Engine e(true, 20, 20);
+    e.run();
 
     return 0;
 }

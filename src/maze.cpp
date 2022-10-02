@@ -1,7 +1,7 @@
 #include "maze.h"
 
 #include <iostream>
-#include <list>
+
 #include <map>
 #include <random>
 #include <cassert>
@@ -114,24 +114,24 @@ std::vector<Node> Maze::get_neighbors(const Node& node) {
     return neighbors;
 }
 
-std::vector<Node> Maze::bfs(const Node& s) {
-    std::vector<Node> visited_nodes;
+std::list<Node> Maze::bfs() {
+    std::list<Node> visited_nodes;
 
     std::map<int, bool> visited;
     std::list<Node> queue;
 
-    visited[s.id] = true;
-    queue.push_back(s);
+    visited[start.id] = true;
+    queue.push_back(start);
 
     while (!queue.empty()) {
         // Get the current node and check if it is the end node.
-        auto node = queue.front();
+        auto const node = queue.front();
         queue.pop_front();
         visited_nodes.push_back(node);
         if (node.end) return visited_nodes;
 
         // Check for unvisited neighbors. If there are any, push them to the back of the queue.
-        auto neighbors = get_neighbors(node);
+        auto const neighbors = get_neighbors(node);
         for (auto neighbor : neighbors) {
             if (!visited[neighbor.id]) {
                 visited[neighbor.id] = true;
@@ -142,24 +142,24 @@ std::vector<Node> Maze::bfs(const Node& s) {
     return visited_nodes;
 }
 
-std::vector<Node> Maze::dfs(const Node& s) {
-    std::vector<Node> visited_nodes;
+std::list<Node> Maze::dfs() {
+    std::list<Node> visited_nodes;
 
     std::map<int, bool> visited;
     std::list<Node> stack;
 
-    visited[s.id] = true;
-    stack.push_front(s);
+    visited[start.id] = true;
+    stack.push_front(start);
 
     while (!stack.empty()) {
         // Get the current node and check if it is the end node.
-        auto node = stack.front();
+        auto const node = stack.front();
         stack.pop_front();
         visited_nodes.push_back(node);
         if (node.end) return visited_nodes;
 
         // Check for unvisited neighbors. If there are any, push them to the front of the stack.
-        auto neighbors = get_neighbors(node);
+        auto const neighbors = get_neighbors(node);
         for (auto neighbor : neighbors) {
             if (!visited[neighbor.id]) {
                 visited[neighbor.id] = true;
