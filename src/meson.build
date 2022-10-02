@@ -1,12 +1,7 @@
-src_files = files(
+maze_files = files(
     'maze.cpp',
-    'maze_test.cpp',
-    'maze_test_constructor.cpp'
 )
 
-maze_test = executable('maze_test',
-    src_files,
-    include_directories : incdir,
-    dependencies : [catch2_lib]
+engine_files = files(
+    'engine.cpp'
 )
-test('maze_test', maze_test)

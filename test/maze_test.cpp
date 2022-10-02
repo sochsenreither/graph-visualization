@@ -2,7 +2,24 @@
 
 #include "maze.h"
 
-#include <catch2/catch.hpp>
+#include "catch2/catch.hpp"
+
+/**
+ * Create a test maze.
+ *
+ * @return An empty 4x4 maze.
+ */
+Maze test_maze() {
+    auto maze = Maze(false, 4, 4);
+
+    for (auto &col : maze.maze) {
+        for (auto &n : col) {
+            n.start = false;
+            n.end = false;
+        }
+    }
+    return maze;
+}
 
 TEST_CASE("Maze with obstacles", "[maze]") {
     /////////////
@@ -11,7 +28,17 @@ TEST_CASE("Maze with obstacles", "[maze]") {
     // _ _ o _ //
     // o _ _ _ //
     /////////////
-    auto maze = Maze(1);
+    auto maze = test_maze();
+
+    maze.maze[0][0].start = true;
+    maze.maze[2][0].end = true;
+    maze.start = maze.maze[0][0];
+    maze.maze[1][0].passable = false;
+    maze.maze[3][0].passable = false;
+    maze.maze[1][1].passable = false;
+    maze.maze[2][2].passable = false;
+    maze.maze[0][3].passable = false;
+
     auto neighbors = maze.get_neighbors(maze.start);
 
     REQUIRE(neighbors.size() == 1);
@@ -24,7 +51,12 @@ TEST_CASE("Maze without ostacles", "[maze]") {
     // _ _ x _ //
     // _ _ _ _ //
     /////////////
-    auto maze = Maze(2);
+    auto maze = test_maze();
+
+    maze.maze[1][1].start = true;
+    maze.maze[2][2].end = true;
+    maze.start = maze.maze[1][1];
+
     auto neighbors = maze.get_neighbors(maze.start);
 
     REQUIRE(neighbors.size() == 4);
@@ -37,7 +69,12 @@ TEST_CASE("Maze with end next to start", "[maze]") {
     // _ _ _ _ //
     // _ _ _ _ //
     /////////////
-    auto maze = Maze(3);
+    auto maze = test_maze();
+
+    maze.maze[0][0].start = true;
+    maze.maze[1][0].end = true;
+    maze.maze[0][1].passable = false;
+    maze.start = maze.maze[0][0];
 
     SECTION("dfs") {
         auto dfs_res = maze.dfs(maze.start);
@@ -52,12 +89,18 @@ TEST_CASE("Maze with end next to start", "[maze]") {
 
 TEST_CASE("BFS and DFS test", "[maze]") {
     /////////////
-    // _ _ _ _ //
-    // _ o s o //
     // _ _ x _ //
+    // _ o s o //
+    // _ _ _ _ //
     // _ _ _ _ //
     /////////////
-    auto maze = Maze(4);
+    auto maze = test_maze();
+
+    maze.maze[2][1].start = true;
+    maze.maze[2][0].end = true;
+    maze.maze[1][1].passable = false;
+    maze.maze[3][1].passable = false;
+    maze.start = maze.maze[2][1];
 
     SECTION("dfs") {
         auto dfs_res = maze.dfs(maze.start);

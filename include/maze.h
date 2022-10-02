@@ -1,24 +1,19 @@
-//
-// Created by Simon Ochsenreither on 01.10.22.
-//
-
 #ifndef MAZE_MAZE_H
 #define MAZE_MAZE_H
 
-#include <array>
 #include <tuple>
 #include <vector>
 
-const auto HEIGHT = 4;
-const auto WIDTH = 4;
+auto const HEIGHT = 10;
+auto const WIDTH = 10;
 
 struct Node {
     int id{};             /// Id of the field.
     int x{};              /// X coordinate of the field.
     int y{};              /// Y coordinate of the field.
-    bool passable{true};  /// True if one can enter the field.
     bool start{false};    /// True if the field is the starting point.
     bool end{false};      /// True if the field is the end point.
+    bool passable{true};  /// True if one can enter the field.
 
     /**
      * Prints every value of the field to stdout.
@@ -31,10 +26,12 @@ struct Node {
  */
 class Maze {
    private:
-    std::array<std::array<Node, HEIGHT>, WIDTH> maze;
+    int w;
+    int h;
 
    public:
     Node start;  /// Starting point of the maze.
+    std::vector<std::vector<Node>> maze; 
 
     /**
      * Returns a vector with all neighbots
@@ -49,16 +46,11 @@ class Maze {
      * There is at most one starting point and one end point.
      *
      * @param random If true there are random obstacles in the maze.
+     * @param width Number of columns in the maze.
+     * @param height Number of rows in the maze.
+     * @param prob Probability of a node being unpassable.
      */
-    explicit Maze(bool random);
-
-    /**
-     * Returns a maze for debug purposes.
-     * Note: These test mazes are hard coded to 4x4 dimensions.
-     *
-     * @param id Id to deterministically generate mazes.
-     */
-    explicit Maze(int id);
+    explicit Maze(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
 
     /**
      * Prints the maze in ASCII to stdout.

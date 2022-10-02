@@ -1,12 +1,10 @@
-//
-// Created by Simon Ochsenreither on 01.10.22.
-//
 #include "maze.h"
 
 #include <iostream>
 #include <list>
 #include <map>
 #include <random>
+#include <cassert>
 
 void Node::debug_print() const {
     std::cout << "x: "
@@ -21,48 +19,56 @@ void Node::debug_print() const {
               << std::endl;
 }
 
-Maze::Maze(bool random) {
+Maze::Maze(bool random, int width, int height, int prob) {
+    assert(width > 0);
+    assert(height > 0);
+
     std::random_device dev;
     std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> dist_passable(0, 7);
-    std::uniform_int_distribution<std::mt19937::result_type> dist_width(0, WIDTH - 1);
-    std::uniform_int_distribution<std::mt19937::result_type> dist_height(0, HEIGHT - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> dist_passable(0, prob);
+    std::uniform_int_distribution<std::mt19937::result_type> dist_width(0, width - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> dist_height(0, height - 1);
 
     // Randomize start and end points.
-    auto start_y = dist_height(rng);
-    auto start_x = dist_width(rng);
-    auto end_y = dist_height(rng);
-    auto end_x = dist_width(rng);
-
-    maze[start_x][start_y].start = true;
-    maze[end_x][end_y].end = true;
+    int const start_y = dist_height(rng);
+    int const start_x = dist_width(rng);
+    int const end_y = dist_height(rng);
+    int const end_x = dist_width(rng);
 
     auto counter = 0;
 
-    for (auto x = 0; x < WIDTH; ++x) {
-        for (auto y = 0; y < HEIGHT; ++y) {
-            maze[x][y].x = x;
-            maze[x][y].y = y;
-            maze[x][y].id = counter++;
-            if (random && dist_passable(rng) == 0 && !maze[x][y].start && !maze[x][y].end) {
-                maze[x][y].passable = false;
-            }
+    for (auto x = 0; x < width; ++x) {
+        maze.push_back(std::vector<Node>{});
+        for (auto y = 0; y < height; ++y) {
+            auto const start = x == start_x && y == start_y;
+            auto const end = x == end_x && y == end_y;
+            auto const passable = !(random && dist_passable(rng) == 0 && !start && !end);
+
+            maze[x].push_back(Node{
+                counter++,
+                x,
+                y,
+                start,
+                end,
+                passable});
         }
     }
 
+    w = width;
+    h = height;
     start = maze[start_x][start_y];
 }
 
 void Maze::debug_print() {
-    for (auto i = 0; i < WIDTH + 2; ++i) {
+    for (auto i = 0; i < w + 2; ++i) {
         std::cout << "//";
     }
     std::cout << "/";
     std::cout << std::endl;
 
-    for (auto y = 0; y < HEIGHT; ++y) {
+    for (auto y = 0; y < h; ++y) {
         std::cout << "// ";
-        for (auto x = 0; x < WIDTH; ++x) {
+        for (auto x = 0; x < w; ++x) {
             if (maze[x][y].start)
                 std::cout << "s ";
             else if (maze[x][y].end)
@@ -76,7 +82,7 @@ void Maze::debug_print() {
         std::cout << std::endl;
     }
 
-    for (auto i = 0; i < WIDTH + 2; ++i) {
+    for (auto i = 0; i < w + 2; ++i) {
         std::cout << "//";
     }
     std::cout << "/";
@@ -92,7 +98,7 @@ std::vector<Node> Maze::get_neighbors(const Node& node) {
     }
 
     // Check right
-    if (node.x < (WIDTH - 1) && maze[node.x + 1][node.y].passable) {
+    if (node.x < (w - 1) && maze[node.x + 1][node.y].passable) {
         neighbors.push_back(maze[node.x + 1][node.y]);
     }
 
@@ -102,7 +108,7 @@ std::vector<Node> Maze::get_neighbors(const Node& node) {
     }
 
     // Check down
-    if (node.y < (HEIGHT - 1) && maze[node.x][node.y + 1].passable) {
+    if (node.y < (h - 1) && maze[node.x][node.y + 1].passable) {
         neighbors.push_back(maze[node.x][node.y + 1]);
     }
     return neighbors;

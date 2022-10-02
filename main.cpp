@@ -1,13 +1,8 @@
-#include "maze.h"
-
-// TODO: add bogosearch
-// TODO: add a*
-// TODO: add dijkstra
-// TODO: add unit tests
+#include "engine.h"
 
 int main() {
-    auto maze = Maze(1);
-    maze.debug_print();
-    
+    Engine e;
+    e.debug_print();
+
     return 0;
 }
