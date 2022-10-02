@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Engine::Engine(bool random, int width, int height) {
-    maze = Maze(random, width, height);
+Engine::Engine(bool random, int width, int height, int prob) {
+    maze = Maze(random, width, height, prob);
 
     auto const w = width * (scale + border_size * 2) + 2 * border_size + 2 * scale;
     auto const h = height * (scale + border_size * 2) + 2 * border_size + 2 * scale;
@@ -97,7 +97,7 @@ void Engine::draw_background() {
             else if (n.passable)
                 color = color_rect;
             else
-                color = color_rect_unpassable;
+                color = color_rect_impassable;
             draw_rectangle(x, y, color);
         }
     }

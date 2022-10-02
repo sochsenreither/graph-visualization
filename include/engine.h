@@ -9,7 +9,7 @@ const auto border_size = 1;
 
 const auto color_bg = sf::Color(45, 45, 45, 255);
 const auto color_rect = sf::Color(225, 225, 225, 255);
-const auto color_rect_unpassable = sf::Color(65, 65, 65, 255);
+const auto color_rect_impassable = sf::Color(65, 65, 65, 255);
 const auto color_border = sf::Color(35, 35, 35, 255);
 const auto color_start = sf::Color(160, 212, 104, 255);
 const auto color_end = sf::Color(72, 207, 173, 255);
@@ -22,7 +22,7 @@ class Engine {
    private:
     sf::RenderWindow window;
     std::list<Node> visited;  /// Contains visited nodes by the search algorithm.
-    std::list<Node> sp; /// Contains nodes of the shortest path.
+    std::list<Node> sp;       /// Contains nodes of the shortest path.
     Maze maze;
     bool finish{false};
 
@@ -37,7 +37,7 @@ class Engine {
      *
      * @param random If true the maze will have random obstacles.
      */
-    Engine(bool random = false, int width = WIDTH, int height = HEIGHT);
+    Engine(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
 
     void run();
     void debug_print();

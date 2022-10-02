@@ -49,7 +49,7 @@ class Maze {
      * @param random If true there are random obstacles in the maze.
      * @param width Number of columns in the maze.
      * @param height Number of rows in the maze.
-     * @param prob Probability of a node being unpassable.
+     * @param prob Probability of a node being impassable.
      */
     explicit Maze(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
 
