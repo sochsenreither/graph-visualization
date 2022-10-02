@@ -12,7 +12,7 @@ Engine::Engine(bool random, int width, int height) {
 }
 
 void Engine::run() {
-    auto nodes = maze.bfs();
+    auto nodes = maze.dfs();
     Node cur;
 
     while (window.isOpen()) {
@@ -55,7 +55,6 @@ void Engine::run() {
 }
 
 void Engine::draw_shortest_path() {
-    
 }
 
 void Engine::draw_visited() {
@@ -70,6 +69,7 @@ void Engine::draw_visited() {
 }
 
 void Engine::draw_background() {
+    // TODO: optimize this to vertex array.
     for (auto &col : maze.maze) {
         for (auto &n : col) {
             auto x = -n.x * (scale + border_size * 2);

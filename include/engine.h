@@ -21,7 +21,7 @@ const auto color_shortest_path = sf::Color::Red;
 class Engine {
    private:
     sf::RenderWindow window;
-    std::list<Node> visited;  /// Contains visited nodes by the search algorithm
+    std::list<Node> visited;  /// Contains visited nodes by the search algorithm.
     Maze maze;
     bool finish{false};
 

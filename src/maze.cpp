@@ -169,3 +169,7 @@ std::list<Node> Maze::dfs() {
     }
     return visited_nodes;
 }
+
+std::tuple<std::list<Node>, std::list<Node>> dijkstra() {
+    
+}
