@@ -12,7 +12,9 @@ Engine::Engine(bool random, int width, int height) {
 }
 
 void Engine::run() {
-    auto nodes = maze.dfs();
+    auto res = maze.dijkstra();
+    auto nodes = res.first;
+    auto shortest_path = res.second;
     Node cur;
 
     while (window.isOpen()) {
@@ -33,8 +35,11 @@ void Engine::run() {
         draw_visited();
 
         // Draw the shortest path
-        if (finish)
-            draw_shortest_path();
+        if (finish && !shortest_path.empty()) {
+            sp.push_back(shortest_path.front());
+            shortest_path.pop_front();
+        }
+        draw_shortest_path();
 
         // Draw the current node.
         if (!finish) {
@@ -55,6 +60,14 @@ void Engine::run() {
 }
 
 void Engine::draw_shortest_path() {
+    for (auto &n : sp) {
+        if (n.start || n.end) {
+            continue;
+        }
+        auto x = -n.x * (scale + border_size * 2);
+        auto y = -n.y * (scale + border_size * 2);
+        draw_rectangle(x, y, color_shortest_path);
+    }
 }
 
 void Engine::draw_visited() {

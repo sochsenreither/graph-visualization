@@ -78,12 +78,13 @@ class Maze {
 
     /**
      * Find the shortest path to the end point of the maze with dijkstra's algorithm.
+     * The algorithm is implemented with a priority queue.
      *
      * See also https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm.
      *
      * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::list<Node>, std::list<Node>> dijkstra();
+    std::pair<std::list<Node>, std::list<Node>> dijkstra();
 
     /**
      * Find the shortest path to the end point of the maze with the Bellman-Ford algorithm.
@@ -92,7 +93,7 @@ class Maze {
      *
      * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::list<Node>, std::list<Node>> bellman_ford();
+    std::pair<std::list<Node>, std::list<Node>> bellman_ford();
 
     /**
      * Find the shortest path to the end point of the maze with the A* algorithm.
@@ -101,7 +102,7 @@ class Maze {
      *
      * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::tuple<std::list<Node>, std::list<Node>> a_star();
+    std::pair<std::list<Node>, std::list<Node>> a_star();
 };
 
 #endif  // MAZE_MAZE_H

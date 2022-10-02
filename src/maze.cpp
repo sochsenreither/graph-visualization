@@ -1,10 +1,11 @@
 #include "maze.h"
 
-#include <iostream>
-
-#include <map>
-#include <random>
 #include <cassert>
+#include <climits>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <random>
 
 void Node::debug_print() const {
     std::cout << "x: "
@@ -170,6 +171,66 @@ std::list<Node> Maze::dfs() {
     return visited_nodes;
 }
 
-std::tuple<std::list<Node>, std::list<Node>> dijkstra() {
-    
+std::pair<std::list<Node>, std::list<Node>> Maze::dijkstra() {
+    std::list<Node> visited_nodes;
+    std::list<Node> shortest_path;
+    Node cur;
+
+    std::map<int, int> distance;  // Maps node id -> distance.
+    std::map<int, Node> prev; // Maps node id -> predecessor.
+
+    // Custom comparator. We only care for the first parameter, which is the weight.
+    auto comp = [](std::pair<int, Node> n1, std::pair<int, Node> n2) {
+                return n1.first > n2.first;
+    };
+    std::priority_queue<std::pair<int, Node>,
+                        std::vector<std::pair<int, Node>>,
+                        decltype(comp)>
+        pq(comp);
+
+    distance[start.id] = 0;
+    prev[start.id] = start;
+    pq.push(std::pair(0, start));
+
+    while (!pq.empty()) {
+        auto cur_cost = pq.top().first;
+        cur = pq.top().second;
+        pq.pop();
+
+        visited_nodes.push_back(cur);
+
+        // Check if the current node is the end.
+        if (cur.end)
+            break;
+
+        // If we get a node with higher cost continue.
+        if (distance[cur.id] < cur_cost)
+            continue;
+
+        // Traverse the neighbors of the current node.
+        auto neighbors = get_neighbors(cur);
+        for (auto& n : neighbors) {
+            // If the node doesn't have an entry in distance yet, update it.
+            if (distance.find(n.id) == distance.end())
+                distance[n.id] = INT_MAX;
+
+            auto alt = distance[cur.id] + 1;  // The weight is always 1.
+
+            if (alt < distance[n.id]) {
+                distance[n.id] = alt;
+                prev[n.id] = cur;
+                pq.push(std::pair(alt, n));
+            }
+        }
+    }
+
+    // Create shortest path.
+    while (true) {
+        shortest_path.push_front(cur);
+        if (cur.id == prev[cur.id].id)
+            break;
+        else
+            cur = prev[cur.id];
+    }
+    return std::pair(visited_nodes, shortest_path);
 }

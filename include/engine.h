@@ -15,13 +15,14 @@ const auto color_start = sf::Color(160, 212, 104, 255);
 const auto color_end = sf::Color(72, 207, 173, 255);
 const auto color_start_end = sf::Color(252, 110, 81, 255);
 const auto color_visited = sf::Color(252, 110, 81, 255);
-const auto color_current = sf::Color(216, 51, 74, 255);
-const auto color_shortest_path = sf::Color::Red;
+const auto color_current = sf::Color::Red;
+const auto color_shortest_path = sf::Color(216, 51, 74, 255);
 
 class Engine {
    private:
     sf::RenderWindow window;
     std::list<Node> visited;  /// Contains visited nodes by the search algorithm.
+    std::list<Node> sp; /// Contains nodes of the shortest path.
     Maze maze;
     bool finish{false};
 
