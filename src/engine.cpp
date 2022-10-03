@@ -43,7 +43,6 @@ void Engine::run() {
         draw_shorest_path_vertex_array();
         draw_current_node_vertex_array();
 
-        // End the current frame.
         window.draw(&vertices[0], vertices.size(), sf::Quads);
         window.display();
     }

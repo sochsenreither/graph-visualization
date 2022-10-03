@@ -1,5 +1,5 @@
 project('graph-visualization', 'cpp',
-  version : '0.1',
+  version : '0.9',
   default_options : ['warning_level=3', 'cpp_std=c++17'])
 
 sfml_dep = dependency('sfml')
