@@ -23,11 +23,12 @@ class Engine {
    private:
     sf::RenderWindow window;
     sf::Font font;
+    std::vector<sf::Vertex> vertices;
 
-    std::deque<Node> visited;  /// Contains all nodes that need to be drawn as visited.
-    std::deque<Node> sp;       /// Contains nodes of the shortest path.
-    int counter_visited{};     /// Index up until visited nodes are drawn.
-    int counter_sp{};          /// Index up until sp nodes are drawn.
+    std::deque<Node> visited;         /// Contains all nodes that need to be drawn as visited.
+    std::deque<Node> sp;              /// Contains nodes of the shortest path.
+    unsigned long counter_visited{};  /// Index up until visited nodes are drawn.
+    unsigned long counter_sp{};       /// Index up until sp nodes are drawn.
 
     int w;  /// Width of the maze.
     int h;  /// Height of the maze.
@@ -37,7 +38,6 @@ class Engine {
     Maze maze;
     bool finish{false};  /// True if all visited nodes were drawn.
     bool go{false};      /// True if the search algorithm was chosen.
-
 
     /**
      * Handles keyboard input.
@@ -51,24 +51,39 @@ class Engine {
      * Num3: Runs Dijkstra.
      * Num4: Runs A*.
      *
-     *
      */
     void handle_keyboard_input();
-    void handle_mouse_input();
-    void reset();
 
     /**
-     * Makes every node in the maze passable.
+     * Handles mouse input.
+     * Left click: Mark node as impassable.
+     * Right click: Mark node as passable.
      *
      */
-    void clear_maze();
+    void handle_mouse_input();
 
-    void draw_ui();
+    void reset();
+
+    void draw_text();
+    void draw_background_vertex_array();
+    void draw_visited_vertex_array();
+    void draw_shorest_path_vertex_array();
+    void draw_current_node_vertex_array();
+    /**
+     * Creates a rectangle out of four vertices.
+     *
+     * @param x x-coordinate.
+     * @param y y-coordinate.
+     * @param color Color.
+     */
+    void add_vertices(int x, int y, sf::Color color);
+
+    /// Functions below are deprecated because of performance issues.
     void draw_rectangle(int x, int y, const sf::Color color);
-    void draw_background();
-    void draw_visited();
-    void draw_shortest_path();
     void draw_current_node();
+    void draw_shortest_path();
+    void draw_visited();
+    void draw_background();
 
    public:
     /**
@@ -79,7 +94,7 @@ class Engine {
     Engine(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
 
     /**
-     * Runs the search algorithm and then draws the progress of the algorithm to sf::window.
+     * Runs the engine.
      *
      */
     void run();

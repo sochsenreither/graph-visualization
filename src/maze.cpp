@@ -242,3 +242,11 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
     }
     return std::pair(visited_nodes, shortest_path);
 }
+
+std::pair<std::deque<Node>, std::deque<Node>> Maze::a_star() {
+    // TODO: implement me
+    std::deque<Node> visited_nodes;
+    std::deque<Node> shortest_path;
+
+    return std::pair(visited_nodes, shortest_path);
+}

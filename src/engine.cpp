@@ -21,22 +21,37 @@ Engine::Engine(bool random, int width, int height, int prob) {
     }
 }
 
+void Engine::reset() {
+    visited.clear();
+    sp.clear();
+    counter_visited = 0;
+    counter_sp = 0;
+    finish = false;
+    go = false;
+}
+
 void Engine::run() {
     while (window.isOpen()) {
+        vertices.clear();
         handle_keyboard_input();
         handle_mouse_input();
         window.clear(color_bg);
 
-        draw_ui();
-        draw_background();
-        draw_visited();
-        draw_shortest_path();
-        draw_current_node();
+        draw_text();
+        draw_background_vertex_array();
+        draw_visited_vertex_array();
+        draw_shorest_path_vertex_array();
+        draw_current_node_vertex_array();
 
         // End the current frame.
+        window.draw(&vertices[0], vertices.size(), sf::Quads);
         window.display();
     }
 }
+
+/////////////////////////////////////////////////////////////////
+/////// Functions below are used for handling user input. ///////
+/////////////////////////////////////////////////////////////////
 
 void Engine::handle_mouse_input() {
     // Get current mouse position
@@ -104,81 +119,111 @@ void Engine::handle_keyboard_input() {
         go = true;
     }
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+        fmt::print("Selected A*\n");
+        auto res = maze.a_star();
+        visited = res.first;
+        sp = res.second;
+        go = true;
+    }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
-        clear_maze();
+        maze.clear_maze();
     }
 }
 
-void Engine::reset() {
-    visited.clear();
-    sp.clear();
-    counter_visited = 0;
-    counter_sp = 0;
-    finish = false;
-    go = false;
-}
+/////////////////////////////////////////////////////////////////////////
+/////// Functions responsible for drawing vertices to the screen. ///////
+/////////////////////////////////////////////////////////////////////////
 
-void Engine::clear_maze() {
-    maze.clear_maze();
-}
-
-void Engine::draw_current_node() {
-    if (!go)
+void Engine::draw_current_node_vertex_array() {
+    if (!go || visited.empty())
         return;
+
     auto cur = visited[counter_visited];
-    draw_rectangle(cur.x, cur.y, color_current);
+    add_vertices(cur.x, cur.y, color_current);
 }
 
-void Engine::draw_shortest_path() {
-    if (!finish)
+void Engine::draw_shorest_path_vertex_array() {
+    if (!finish || sp.empty())
         return;
 
     if (counter_sp + 1 < sp.size())
         counter_sp++;
 
-    for (auto i = 0; i < counter_sp; ++i) {
+    for (unsigned long i = 0; i < counter_sp; ++i) {
         auto const cur = sp[i];
         if (cur.start || cur.end)
             continue;
-        draw_rectangle(cur.x, cur.y, color_shortest_path);
+
+        add_vertices(cur.x, cur.y, color_shortest_path);
     }
 }
 
-void Engine::draw_visited() {
-    if (!go)
+void Engine::draw_visited_vertex_array() {
+    if (!go || visited.empty())
         return;
     if (counter_visited + 1 < visited.size())
         counter_visited++;
     else
         finish = true;
 
-    for (auto i = 0; i < counter_visited; ++i) {
+    for (unsigned long i = 0; i < counter_visited; ++i) {
         auto const cur = visited[i];
         if (cur.start || cur.end)
             continue;
-        draw_rectangle(cur.x, cur.y, color_visited);
+
+        add_vertices(cur.x, cur.y, color_visited);
     }
 }
 
-void Engine::draw_background() {
-    // TODO: optimize this to vertex array.
+void Engine::draw_background_vertex_array() {
     for (auto &col : maze.maze) {
-        for (auto const &n : col) {
+        for (auto const &cur : col) {
             sf::Color color;
-            if (n.start && n.end)
+            if (cur.start && cur.end)
                 color = color_start_end;
-            else if (n.start)
+            else if (cur.start)
                 color = color_start;
-            else if (n.end)
+            else if (cur.end)
                 color = color_end;
-            else if (n.passable)
+            else if (cur.passable)
                 color = color_rect;
             else
                 color = color_rect_impassable;
-            draw_rectangle(n.x, n.y, color);
+
+            add_vertices(cur.x, cur.y, color);
         }
     }
 }
+
+void Engine::add_vertices(int x, int y, sf::Color color) {
+    auto x_pos = (x * (scale + border_size * 2)) + scale;
+    auto y_pos = (y * (scale + border_size * 2)) + scale + top_margin;
+
+    vertices.push_back(sf::Vertex(sf::Vector2f(x_pos, y_pos), color));
+    vertices.push_back(sf::Vertex(sf::Vector2f(x_pos, y_pos + scale), color));
+    vertices.push_back(sf::Vertex(sf::Vector2f(x_pos + scale, y_pos + scale), color));
+    vertices.push_back(sf::Vertex(sf::Vector2f(x_pos + scale, y_pos), color));
+}
+
+void Engine::draw_text() {
+    sf::Text text;
+
+    text.setFont(font);
+    text.setPosition(sf::Vector2f(scale, scale));
+
+    text.setString(fmt::format("Steps: {}", counter_visited));
+
+    text.setCharacterSize(26);
+    text.setFillColor(color_rect);
+    text.setStyle(sf::Text::Bold);
+    window.draw(text);
+}
+
+////////////////////////////////////////////////////////////////////////////
+/////// Functions below aren't used anymore for performance reasons. ///////
+////////////////////////////////////////////////////////////////////////////
 
 void Engine::draw_rectangle(int x, int y, const sf::Color color) {
     auto x_pos = (-x * (scale + border_size * 2)) - scale;
@@ -198,16 +243,69 @@ void Engine::draw_rectangle(int x, int y, const sf::Color color) {
     window.draw(rect);
 }
 
-void Engine::draw_ui() {
-    sf::Text text;
+void Engine::draw_background() {
+    // TODO: optimize this to vertex array.
+    for (auto &col : maze.maze) {
+        for (auto const &n : col) {
+            auto draw = true;
+            sf::Color color;
+            if (n.start && n.end)
+                color = color_start_end;
+            else if (n.start)
+                color = color_start;
+            else if (n.end)
+                color = color_end;
+            else if (n.passable)
+                color = color_rect;
+            else
+                color = color_rect_impassable;
 
-    text.setFont(font);
-    text.setPosition(sf::Vector2f(scale, scale));
+            // Skip the drawing for nodes that will be drawn as visited.
+            for (unsigned long i = 0; i < counter_visited; ++i) {
+                if (!visited.empty() && n.id == visited[i].id && n.id != maze.start.id)
+                    draw = false;
+                break;
+            }
+            if (draw)
+                draw_rectangle(n.x, n.y, color);
+        }
+    }
+}
 
-    text.setString(fmt::format("Steps: {}", counter_visited));
+void Engine::draw_visited() {
+    if (!go || visited.empty())
+        return;
+    if (counter_visited + 1 < visited.size())
+        counter_visited++;
+    else
+        finish = true;
 
-    text.setCharacterSize(26);
-    text.setFillColor(color_rect);
-    text.setStyle(sf::Text::Bold);
-    window.draw(text);
+    for (unsigned long i = 0; i < counter_visited; ++i) {
+        auto const cur = visited[i];
+        if (cur.start || cur.end)
+            continue;
+        draw_rectangle(cur.x, cur.y, color_visited);
+    }
+}
+
+void Engine::draw_current_node() {
+    if (!go || visited.empty())
+        return;
+    auto cur = visited[counter_visited];
+    draw_rectangle(cur.x, cur.y, color_current);
+}
+
+void Engine::draw_shortest_path() {
+    if (!finish || sp.empty())
+        return;
+
+    if (counter_sp + 1 < sp.size())
+        counter_sp++;
+
+    for (unsigned long i = 0; i < counter_sp; ++i) {
+        auto const cur = sp[i];
+        if (cur.start || cur.end)
+            continue;
+        draw_rectangle(cur.x, cur.y, color_shortest_path);
+    }
 }
