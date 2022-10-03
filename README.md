@@ -27,6 +27,11 @@ The size of the maze can be configured in `main.cpp` when constructing the `engi
 - `3` to run Dijkstra
 - `4` to run A*
 
+## Demo
+![demo2](https://user-images.githubusercontent.com/29070949/193677555-0af3e4ad-c54a-4be9-af27-20e0c19bc51a.gif)
+
+![draw](https://user-images.githubusercontent.com/29070949/193677599-9b061f53-fbcb-41e8-90a3-3dec35aa0dd5.gif)
+
 ## External libraries used by this project
 
 These dependencies will be downloaded automatically when building the project.
