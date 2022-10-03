@@ -3,7 +3,6 @@ Maze visualizer is a visualization for different path finding and shortest path 
 - `BFS`
 - `DFS`
 - `Dijkstra`
-- `A*`
 
 It is written in `C++17` and is using `SFML` for graphics.
 
