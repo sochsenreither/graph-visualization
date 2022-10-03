@@ -4,6 +4,7 @@ project('graph-visualization', 'cpp',
 
 sfml_dep = dependency('sfml')
 catch2_dep = dependency('catch2')
+fmt_dep = dependency('fmt')
 
 incdir = include_directories('include')
 
@@ -15,5 +16,5 @@ executable('graph-visualization',
     maze_files,
     engine_files,
     include_directories : incdir,
-    dependencies: [sfml_dep]
+    dependencies: [sfml_dep, fmt_dep]
 )

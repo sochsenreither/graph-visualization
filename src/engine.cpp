@@ -1,92 +1,169 @@
 #include "engine.h"
 
-#include <iostream>
+#include <stdexcept>
+
+#include "fmt/core.h"
 
 Engine::Engine(bool random, int width, int height, int prob) {
-    maze = Maze(random, width, height, prob);
+    r = random;
+    w = width;
+    h = height;
+    p = prob;
+    maze = Maze(r, w, h, p);
 
-    auto const w = width * (scale + border_size * 2) + 2 * border_size + 2 * scale;
-    auto const h = height * (scale + border_size * 2) + 2 * border_size + 2 * scale;
+    auto const window_w = w * (scale + border_size * 2) + 2 * border_size + 2 * scale;
+    auto const hindow_h = h * (scale + border_size * 2) + 2 * border_size + 2 * scale + top_margin;
 
-    window.create(sf::VideoMode(w, h), "maze");
+    window.create(sf::VideoMode(window_w, hindow_h), "maze");
+
+    if (!font.loadFromFile("font/SourceSansPro-Regular.otf")) {
+        throw std::runtime_error("Failed to open font");
+    }
 }
 
 void Engine::run() {
-    auto res = maze.dijkstra();
-    auto nodes = res.first;
-    auto shortest_path = res.second;
-    Node cur;
-
     while (window.isOpen()) {
-        // Check for window events.
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        // Clear the window with grey color.
+        handle_keyboard_input();
+        handle_mouse_input();
         window.clear(color_bg);
 
-        // Draw the background of the maze.
+        draw_ui();
         draw_background();
-
-        // Draw the visited nodes of the search algorithm.
         draw_visited();
-
-        // Draw the shortest path
-        if (finish && !shortest_path.empty()) {
-            sp.push_back(shortest_path.front());
-            shortest_path.pop_front();
-        }
         draw_shortest_path();
-
-        // Draw the current node.
-        if (!finish) {
-            cur = nodes.front();
-            nodes.pop_front();
-            visited.push_back(cur);
-            if (nodes.empty())
-                finish = true;
-        }
-
-        auto x = -cur.x * (scale + border_size * 2);
-        auto y = -cur.y * (scale + border_size * 2);
-        draw_rectangle(x, y, color_current);
+        draw_current_node();
 
         // End the current frame.
         window.display();
     }
 }
 
+void Engine::handle_mouse_input() {
+    // Get current mouse position
+    auto mouse_pos = sf::Mouse::getPosition(window);
+
+    auto x_pos = (mouse_pos.x + scale) / (scale + border_size * 2) - 2;
+    auto y_pos = (mouse_pos.y - scale - top_margin) / (scale + border_size * 2);
+
+    // Check if the position is inside the 2D vector.
+    auto out_of_bound = !(x_pos >= 0 && x_pos < w && y_pos >= 0 && y_pos < h);
+    if (out_of_bound)
+        return;
+
+    // Check if the position is a starting or end point.
+    auto start_or_end = maze.maze[x_pos][y_pos].start || maze.maze[x_pos][y_pos].end;
+    if (start_or_end)
+        return;
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        maze.maze[x_pos][y_pos].passable = false;
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+        maze.maze[x_pos][y_pos].passable = true;
+    }
+}
+
+void Engine::handle_keyboard_input() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+            window.close();
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+        reset();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+        reset();
+        maze = Maze(r, w, h, p);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        window.close();
+
+    if (go)
+        return;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+        fmt::print("Selected BFS\n");
+        visited = maze.bfs();
+        go = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+        fmt::print("Selected DFS\n");
+        visited = maze.dfs();
+        go = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+        fmt::print("Selected Dijkstra\n");
+        auto res = maze.dijkstra();
+        visited = res.first;
+        sp = res.second;
+        go = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+        clear_maze();
+    }
+}
+
+void Engine::reset() {
+    visited.clear();
+    sp.clear();
+    counter_visited = 0;
+    counter_sp = 0;
+    finish = false;
+    go = false;
+}
+
+void Engine::clear_maze() {
+    maze.clear_maze();
+}
+
+void Engine::draw_current_node() {
+    if (!go)
+        return;
+    auto cur = visited[counter_visited];
+    draw_rectangle(cur.x, cur.y, color_current);
+}
+
 void Engine::draw_shortest_path() {
-    for (auto &n : sp) {
-        if (n.start || n.end) {
+    if (!finish)
+        return;
+
+    if (counter_sp + 1 < sp.size())
+        counter_sp++;
+
+    for (auto i = 0; i < counter_sp; ++i) {
+        auto const cur = sp[i];
+        if (cur.start || cur.end)
             continue;
-        }
-        auto x = -n.x * (scale + border_size * 2);
-        auto y = -n.y * (scale + border_size * 2);
-        draw_rectangle(x, y, color_shortest_path);
+        draw_rectangle(cur.x, cur.y, color_shortest_path);
     }
 }
 
 void Engine::draw_visited() {
-    for (auto &n : visited) {
-        if (n.start || n.end) {
+    if (!go)
+        return;
+    if (counter_visited + 1 < visited.size())
+        counter_visited++;
+    else
+        finish = true;
+
+    for (auto i = 0; i < counter_visited; ++i) {
+        auto const cur = visited[i];
+        if (cur.start || cur.end)
             continue;
-        }
-        auto x = -n.x * (scale + border_size * 2);
-        auto y = -n.y * (scale + border_size * 2);
-        draw_rectangle(x, y, color_visited);
+        draw_rectangle(cur.x, cur.y, color_visited);
     }
 }
 
 void Engine::draw_background() {
     // TODO: optimize this to vertex array.
     for (auto &col : maze.maze) {
-        for (auto &n : col) {
-            auto x = -n.x * (scale + border_size * 2);
-            auto y = -n.y * (scale + border_size * 2);
+        for (auto const &n : col) {
             sf::Color color;
             if (n.start && n.end)
                 color = color_start_end;
@@ -98,12 +175,15 @@ void Engine::draw_background() {
                 color = color_rect;
             else
                 color = color_rect_impassable;
-            draw_rectangle(x, y, color);
+            draw_rectangle(n.x, n.y, color);
         }
     }
 }
 
 void Engine::draw_rectangle(int x, int y, const sf::Color color) {
+    auto x_pos = (-x * (scale + border_size * 2)) - scale;
+    auto y_pos = (-y * (scale + border_size * 2)) - scale - top_margin;
+
     sf::RectangleShape rect(sf::Vector2f(scale, scale));
 
     // Set color of rectangle.
@@ -114,10 +194,20 @@ void Engine::draw_rectangle(int x, int y, const sf::Color color) {
     rect.setOutlineColor(color_border);
 
     // Add an offset so there is a small gap to the window border.
-    rect.setOrigin(x - scale, y - scale);
+    rect.setOrigin(x_pos, y_pos);
     window.draw(rect);
 }
 
-void Engine::debug_print() {
-    maze.debug_print();
+void Engine::draw_ui() {
+    sf::Text text;
+
+    text.setFont(font);
+    text.setPosition(sf::Vector2f(scale, scale));
+
+    text.setString(fmt::format("Steps: {}", counter_visited));
+
+    text.setCharacterSize(26);
+    text.setFillColor(color_rect);
+    text.setStyle(sf::Text::Bold);
+    window.draw(text);
 }

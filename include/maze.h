@@ -1,9 +1,10 @@
 #ifndef MAZE_MAZE_H
 #define MAZE_MAZE_H
 
+#include <list>
+#include <queue>
 #include <tuple>
 #include <vector>
-#include <list>
 
 auto const HEIGHT = 10;
 auto const WIDTH = 10;
@@ -42,6 +43,12 @@ class Maze {
     std::vector<Node> get_neighbors(const Node& node);
 
     /**
+     * Makes every node in the maze passable.
+     *
+     */
+    void clear_maze();
+
+    /**
      * Returns a maze with random start and end points.
      * There are no guarantees that the end point is reachable in a random maze.
      * There is at most one starting point and one end point.
@@ -65,7 +72,7 @@ class Maze {
      *
      * @return Every node in the order it was visited.
      */
-    std::list<Node> bfs();
+    std::deque<Node> bfs();
 
     /**
      * Find the end point in the maze with depth first search.
@@ -74,7 +81,7 @@ class Maze {
      *
      * @return Every node in the order it was visited.
      */
-    std::list<Node> dfs();
+    std::deque<Node> dfs();
 
     /**
      * Find the shortest path to the end point of the maze with dijkstra's algorithm.
@@ -84,16 +91,7 @@ class Maze {
      *
      * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::pair<std::list<Node>, std::list<Node>> dijkstra();
-
-    /**
-     * Find the shortest path to the end point of the maze with the Bellman-Ford algorithm.
-     *
-     * See also https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm.
-     *
-     * @return Two lists, one containing every visited node and one the shortest path.
-     */
-    std::pair<std::list<Node>, std::list<Node>> bellman_ford();
+    std::pair<std::deque<Node>, std::deque<Node>> dijkstra();
 
     /**
      * Find the shortest path to the end point of the maze with the A* algorithm.
@@ -102,7 +100,7 @@ class Maze {
      *
      * @return Two lists, one containing every visited node and one the shortest path.
      */
-    std::pair<std::list<Node>, std::list<Node>> a_star();
+    std::pair<std::deque<Node>, std::deque<Node>> a_star();
 };
 
 #endif  // MAZE_MAZE_H

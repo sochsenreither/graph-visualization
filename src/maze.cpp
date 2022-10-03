@@ -4,7 +4,6 @@
 #include <climits>
 #include <iostream>
 #include <map>
-#include <queue>
 #include <random>
 
 void Node::debug_print() const {
@@ -115,8 +114,16 @@ std::vector<Node> Maze::get_neighbors(const Node& node) {
     return neighbors;
 }
 
-std::list<Node> Maze::bfs() {
-    std::list<Node> visited_nodes;
+void Maze::clear_maze() {
+    for (auto &col: maze) {
+        for (auto &n: col) {
+            n.passable = true;
+        }
+    }
+}
+
+std::deque<Node> Maze::bfs() {
+    std::deque<Node> visited_nodes;
 
     std::map<int, bool> visited;
     std::list<Node> queue;
@@ -143,8 +150,8 @@ std::list<Node> Maze::bfs() {
     return visited_nodes;
 }
 
-std::list<Node> Maze::dfs() {
-    std::list<Node> visited_nodes;
+std::deque<Node> Maze::dfs() {
+    std::deque<Node> visited_nodes;
 
     std::map<int, bool> visited;
     std::list<Node> stack;
@@ -171,18 +178,19 @@ std::list<Node> Maze::dfs() {
     return visited_nodes;
 }
 
-std::pair<std::list<Node>, std::list<Node>> Maze::dijkstra() {
-    std::list<Node> visited_nodes;
-    std::list<Node> shortest_path;
+std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
+    std::deque<Node> visited_nodes;
+    std::deque<Node> shortest_path;
     Node cur;
 
     std::map<int, int> distance;  // Maps node id -> distance.
-    std::map<int, Node> prev; // Maps node id -> predecessor.
+    std::map<int, Node> prev;     // Maps node id -> predecessor.
 
     // Custom comparator. We only care for the first parameter, which is the weight.
-    auto comp = [](std::pair<int, Node> n1, std::pair<int, Node> n2) {
-                return n1.first > n2.first;
-    };
+    auto comp =
+        [](std::pair<int, Node> n1, std::pair<int, Node> n2) {
+            return n1.first > n2.first;
+        };
     std::priority_queue<std::pair<int, Node>,
                         std::vector<std::pair<int, Node>>,
                         decltype(comp)>
@@ -193,7 +201,7 @@ std::pair<std::list<Node>, std::list<Node>> Maze::dijkstra() {
     pq.push(std::pair(0, start));
 
     while (!pq.empty()) {
-        auto cur_cost = pq.top().first;
+        auto const cur_cost = pq.top().first;
         cur = pq.top().second;
         pq.pop();
 
@@ -209,12 +217,12 @@ std::pair<std::list<Node>, std::list<Node>> Maze::dijkstra() {
 
         // Traverse the neighbors of the current node.
         auto neighbors = get_neighbors(cur);
-        for (auto& n : neighbors) {
+        for (auto const& n : neighbors) {
             // If the node doesn't have an entry in distance yet, update it.
             if (distance.find(n.id) == distance.end())
                 distance[n.id] = INT_MAX;
 
-            auto alt = distance[cur.id] + 1;  // The weight is always 1.
+            auto const alt = distance[cur.id] + 1;  // The weight is always 1.
 
             if (alt < distance[n.id]) {
                 distance[n.id] = alt;
