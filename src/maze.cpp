@@ -1,8 +1,8 @@
 #include "maze.h"
 
 #include <cassert>
-#include <climits>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <random>
 
@@ -115,8 +115,8 @@ std::vector<Node> Maze::get_neighbors(const Node& node) {
 }
 
 void Maze::clear_maze() {
-    for (auto &col: maze) {
-        for (auto &n: col) {
+    for (auto& col : maze) {
+        for (auto& n : col) {
             n.passable = true;
         }
     }
@@ -220,7 +220,7 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
         for (auto const& n : neighbors) {
             // If the node doesn't have an entry in distance yet, update it.
             if (distance.find(n.id) == distance.end())
-                distance[n.id] = INT_MAX;
+                distance[n.id] = std::numeric_limits<int>::max();
 
             auto const alt = distance[cur.id] + 1;  // The weight is always 1.
 

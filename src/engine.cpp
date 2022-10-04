@@ -100,27 +100,22 @@ void Engine::handle_keyboard_input() {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
         fmt::print("Selected BFS\n");
+        algorithm = "BFS";
         visited = maze.bfs();
         go = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
         fmt::print("Selected DFS\n");
+        algorithm = "DFS";
         visited = maze.dfs();
         go = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
         fmt::print("Selected Dijkstra\n");
+        algorithm = "Dijkstra";
         auto res = maze.dijkstra();
-        visited = res.first;
-        sp = res.second;
-        go = true;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-        fmt::print("Selected A*\n");
-        auto res = maze.a_star();
         visited = res.first;
         sp = res.second;
         go = true;
@@ -217,6 +212,15 @@ void Engine::draw_text() {
     text.setCharacterSize(26);
     text.setFillColor(color_rect);
     text.setStyle(sf::Text::Bold);
+    window.draw(text);
+
+    if (!go)
+        return;
+
+    text.setString(fmt::format("Running: {}", algorithm));
+    auto x = window.getSize().x - text.getLocalBounds().width - scale - 5;
+
+    text.setPosition(sf::Vector2f(x, scale));
     window.draw(text);
 }
 

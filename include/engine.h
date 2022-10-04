@@ -1,6 +1,8 @@
 #ifndef MAZE_ENGINE_H
 #define MAZE_ENGINE_H
 
+#include <string>
+
 #include "SFML/Graphics.hpp"
 #include "maze.h"
 
@@ -24,6 +26,8 @@ class Engine {
     sf::RenderWindow window;
     sf::Font font;
     std::vector<sf::Vertex> vertices;
+
+    std::string algorithm;  /// The algorithm used to find the end.
 
     std::deque<Node> visited;         /// Contains all nodes that need to be drawn as visited.
     std::deque<Node> sp;              /// Contains nodes of the shortest path.
@@ -49,7 +53,6 @@ class Engine {
      * Num1: Runs BFS.
      * Num2: Runs DFS.
      * Num3: Runs Dijkstra.
-     * Num4: Runs A*.
      *
      */
     void handle_keyboard_input();
