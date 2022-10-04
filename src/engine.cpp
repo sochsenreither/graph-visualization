@@ -231,7 +231,9 @@ void Engine::draw_text() {
     text.setFont(font);
     text.setPosition(sf::Vector2f(scale, scale));
 
-    text.setString(fmt::format("Steps: {}", counter_visited));
+    auto s = finish && !sp.empty() ? fmt::format("Steps: {}  Shortest path: {}", counter_visited, counter_sp) : fmt::format("Steps: {}", counter_visited);
+
+    text.setString(s);
 
     text.setCharacterSize(26);
     text.setFillColor(color_rect);
