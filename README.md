@@ -15,6 +15,8 @@ $ ./build/graph-visualization
 
 ## Controls
 The size of the maze can be configured in `main.cpp` when constructing the `engine` object. After starting, following inputs are possible:
+- `Left click` + `ctrl` to set a new start
+- `Right click` + `ctrl` to set a new end
 - `Left click` on a node to make it impassable
 - `Right click` on a node to make it passable
 - `Enter` to reset the program state
@@ -24,6 +26,8 @@ The size of the maze can be configured in `main.cpp` when constructing the `engi
 - `1` to run DFS
 - `2` to run BFS
 - `3` to run Dijkstra
+- `4` to run A* with manhattan heuristics
+- `5` to run A* with euclidean heuristics
 
 ## Demo
 ![demo2](https://user-images.githubusercontent.com/29070949/193677555-0af3e4ad-c54a-4be9-af27-20e0c19bc51a.gif)

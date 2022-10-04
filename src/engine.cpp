@@ -70,11 +70,17 @@ void Engine::handle_mouse_input() {
         return;
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        maze.maze[x_pos][y_pos].passable = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            maze.set_start(x_pos, y_pos);
+        else
+            maze.maze[x_pos][y_pos].passable = false;
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-        maze.maze[x_pos][y_pos].passable = true;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            maze.set_end(x_pos, y_pos);
+        else
+            maze.maze[x_pos][y_pos].passable = true;
     }
 }
 
@@ -99,21 +105,21 @@ void Engine::handle_keyboard_input() {
         return;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-        fmt::print("Selected BFS\n");
+        fmt::print("Selected BFS.. ");
         algorithm = "BFS";
         visited = maze.bfs();
         go = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-        fmt::print("Selected DFS\n");
+        fmt::print("Selected DFS.. ");
         algorithm = "DFS";
         visited = maze.dfs();
         go = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-        fmt::print("Selected Dijkstra\n");
+        fmt::print("Selected Dijkstra.. ");
         algorithm = "Dijkstra";
         auto res = maze.dijkstra();
         visited = res.first;
@@ -122,7 +128,7 @@ void Engine::handle_keyboard_input() {
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-        fmt::print("Selected A* with Manhattan\n");
+        fmt::print("Selected A* with Manhattan.. ");
         algorithm = "A*";
         auto res = maze.a_star(Heuristics::Manhattan);
         visited = res.first;
@@ -131,7 +137,7 @@ void Engine::handle_keyboard_input() {
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-        fmt::print("Selected A* with Euclidean\n");
+        fmt::print("Selected A* with Euclidean.. ");
         algorithm = "A*";
         auto res = maze.a_star(Heuristics::Euclidean);
         visited = res.first;

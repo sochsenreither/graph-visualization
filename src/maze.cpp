@@ -1,6 +1,7 @@
 #include "maze.h"
 
 #include <cassert>
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -59,6 +60,20 @@ Maze::Maze(bool random, int width, int height, int prob) {
     h = height;
     start = maze[start_x][start_y];
     end = maze[end_x][end_y];
+}
+
+void Maze::set_start(int x, int y) {
+    maze[start.x][start.y].start = false;
+    maze[x][y].start = true;
+    maze[x][y].passable = true;
+    start = maze[x][y];
+}
+
+void Maze::set_end(int x, int y) {
+    maze[end.x][end.y].end = false;
+    maze[x][y].end = true;
+    maze[x][y].passable = true;
+    end = maze[x][y];
 }
 
 void Maze::debug_print() {
@@ -152,13 +167,16 @@ std::deque<Node> Maze::bfs() {
     visited[start.id] = true;
     queue.push_back(start);
 
+    // Take the first timestamp.
+    auto t1 = std::chrono::high_resolution_clock::now();
+
     while (!queue.empty()) {
         // Get the current node and check if it is the end node.
         auto const node = queue.front();
         queue.pop_front();
         visited_nodes.push_back(node);
         if (node.end)
-            return visited_nodes;
+            break;
 
         // Check for unvisited neighbors. If there are any, push them to the back of the queue.
         auto const neighbors = get_neighbors(node);
@@ -169,6 +187,11 @@ std::deque<Node> Maze::bfs() {
             }
         }
     }
+
+    // Take the second timestamp.
+    auto t2 = std::chrono::high_resolution_clock::now();
+    print_elapsed_time(t1, t2);
+
     return visited_nodes;
 }
 
@@ -181,13 +204,16 @@ std::deque<Node> Maze::dfs() {
     visited[start.id] = true;
     stack.push_front(start);
 
+    // Take the first timestamp.
+    auto t1 = std::chrono::high_resolution_clock::now();
+
     while (!stack.empty()) {
         // Get the current node and check if it is the end node.
         auto const node = stack.front();
         stack.pop_front();
         visited_nodes.push_back(node);
         if (node.end)
-            return visited_nodes;
+            break;
 
         // Check for unvisited neighbors. If there are any, push them to the front of the stack.
         auto const neighbors = get_neighbors(node);
@@ -198,6 +224,11 @@ std::deque<Node> Maze::dfs() {
             }
         }
     }
+
+    // Take the second timestamp.
+    auto t2 = std::chrono::high_resolution_clock::now();
+    print_elapsed_time(t1, t2);
+
     return visited_nodes;
 }
 
@@ -225,6 +256,9 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
     distance[start.id] = 0;
     prev[start.id] = start;
     pq.push(std::pair(0, start));
+
+    // Take the first timestamp.
+    auto t1 = std::chrono::high_resolution_clock::now();
 
     while (!pq.empty()) {
         // Get the node of the queue with the shortest distance to the start.
@@ -262,7 +296,11 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
         }
     }
 
-    // Create shortest path.
+    // Take the second timestamp.
+    auto t2 = std::chrono::high_resolution_clock::now();
+    print_elapsed_time(t1, t2);
+
+    // Reconstruct path.
     while (true) {
         shortest_path.push_front(cur);
         if (cur.id == prev[cur.id].id)
@@ -270,6 +308,7 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::dijkstra() {
         else
             cur = prev[cur.id];
     }
+
     return std::pair(visited_nodes, shortest_path);
 }
 
@@ -277,6 +316,7 @@ template <typename Heuristic>
 std::pair<std::deque<Node>, std::deque<Node>> Maze::_a_star(Heuristic h) {
     std::deque<Node> visited_nodes;
     std::deque<Node> shortest_path;
+    Node cur;
 
     // Maps n.id -> node preceding n on the cheapest path from start to n.
     std::map<int, Node> came_from;
@@ -308,12 +348,15 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::_a_star(Heuristic h) {
     pq.push(std::pair(f_score[start.id], start));
     contains[start.id] = true;
 
+    // Take the first timestamp.
+    auto t1 = std::chrono::high_resolution_clock::now();
+
     while (!pq.empty()) {
         // Get the node with the lowest f_score.
-        auto cur = pq.top().second;
+        cur = pq.top().second;
         pq.pop();
 
-        // Push this node to the visited nodes.
+        // Push the current node to the visited nodes.
         visited_nodes.push_back(cur);
 
         if (cur.end)
@@ -345,7 +388,17 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::_a_star(Heuristic h) {
         }
     }
 
-    // TODO: reconstruct path.
+    // Take the second timestamp.
+    auto t2 = std::chrono::high_resolution_clock::now();
+    print_elapsed_time(t1, t2);
+
+    // Reconstruct path.
+    shortest_path.push_front(cur);
+    while (came_from.find(cur.id) != came_from.end()) {
+        cur = came_from[cur.id];
+        shortest_path.push_front(cur);
+    }
+
     return std::pair(visited_nodes, shortest_path);
 }
 
@@ -368,4 +421,11 @@ std::pair<std::deque<Node>, std::deque<Node>> Maze::a_star(Heuristics heuristic)
                 return std::sqrt(dx * dx + dy * dy);
             });
     }
+}
+
+template <typename Clock>
+void Maze::print_elapsed_time(std::chrono::time_point<Clock> t1, std::chrono::time_point<Clock> t2) {
+    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+
+    std::cout << "It took " << ms_int.count() << "ms to find the end." << std::endl;
 }

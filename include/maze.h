@@ -44,11 +44,49 @@ class Maze {
     template <typename Heuristic>
     std::pair<std::deque<Node>, std::deque<Node>> _a_star(Heuristic h);
 
+    /**
+     * A helper function to print the elapsed time between t1 and t2.
+     *
+     * @tparam Clock
+     * @param t1 Timestamp 1.
+     * @param t2 Timestamp 2.
+     */
+    template <typename Clock>
+    void print_elapsed_time(std::chrono::time_point<Clock> t1, std::chrono::time_point<Clock> t2);
+
    public:
     Node start;
     Node end;
 
     std::vector<std::vector<Node>> maze;
+
+    /**
+     * Returns a maze with random start and end points.
+     * There are no guarantees that the end point is reachable in a random maze.
+     * There is at most one starting point and one end point.
+     *
+     * @param random If true there are random obstacles in the maze.
+     * @param width Number of columns in the maze.
+     * @param height Number of rows in the maze.
+     * @param prob Probability of a node being impassable.
+     */
+    explicit Maze(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
+
+    /**
+     * Delete the old start and set a new one.
+     *
+     * @param x x-coordinate.
+     * @param y y-coordinate.
+     */
+    void set_start(int x, int y);
+
+    /**
+     * Delete the old end and set a new one.
+     *
+     * @param x x-coordinate.
+     * @param y y-coordinate.
+     */
+    void set_end(int x, int y);
 
     /**
      * Returns a vector with all neighbots
@@ -62,18 +100,6 @@ class Maze {
      *
      */
     void clear_maze();
-
-    /**
-     * Returns a maze with random start and end points.
-     * There are no guarantees that the end point is reachable in a random maze.
-     * There is at most one starting point and one end point.
-     *
-     * @param random If true there are random obstacles in the maze.
-     * @param width Number of columns in the maze.
-     * @param height Number of rows in the maze.
-     * @param prob Probability of a node being impassable.
-     */
-    explicit Maze(bool random = false, int width = WIDTH, int height = HEIGHT, int prob = 7);
 
     /**
      * Prints the maze in ASCII to stdout.
@@ -102,8 +128,6 @@ class Maze {
      * Find the shortest path to the end point of the maze with dijkstra's algorithm.
      * The algorithm is implemented with a priority queue.
      *
-     * Remark: Dijkstra is a special case of A*, where the heuristics always returns 0.
-     *
      * See also https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm.
      *
      * @return Two queues, one containing every visited node and one the shortest path.
@@ -118,7 +142,7 @@ class Maze {
      * @param h The heuristics to choose. Possible are Dijkstra (h always returns 0), Manhattan and Euclidean.
      * @return Two queue, one containing every visited node and one the shortest path.
      */
-    std::pair<std::deque<Node>, std::deque<Node>> a_star(Heuristics h = Heuristics::Euclidean);
+    std::pair<std::deque<Node>, std::deque<Node>> a_star(Heuristics h = Heuristics::Manhattan);
 };
 
 #endif  // MAZE_MAZE_H
