@@ -39,5 +39,7 @@ These dependencies will be downloaded automatically when building the project.
 - [fmt](https://github.com/fmtlib/fmt)
 
 ## To-do
-- Implement A*
+- ~~Implement A*~~
+- Implement Bidirectional search
 - Implement maze generation algorithms
+- Implement command line input

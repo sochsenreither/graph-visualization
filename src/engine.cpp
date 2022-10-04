@@ -121,6 +121,24 @@ void Engine::handle_keyboard_input() {
         go = true;
     }
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+        fmt::print("Selected A* with Manhattan\n");
+        algorithm = "A*";
+        auto res = maze.a_star(Heuristics::Manhattan);
+        visited = res.first;
+        sp = res.second;
+        go = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+        fmt::print("Selected A* with Euclidean\n");
+        algorithm = "A*";
+        auto res = maze.a_star(Heuristics::Euclidean);
+        visited = res.first;
+        sp = res.second;
+        go = true;
+    }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
         maze.clear_maze();
     }

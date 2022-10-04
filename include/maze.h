@@ -3,11 +3,18 @@
 
 #include <list>
 #include <queue>
+#include <string>
 #include <tuple>
 #include <vector>
 
 auto const HEIGHT = 10;
 auto const WIDTH = 10;
+
+enum class Heuristics {
+    Dijkstra,
+    Manhattan,
+    Euclidean,
+};
 
 struct Node {
     int id{};             /// Id of the field.
@@ -31,8 +38,16 @@ class Maze {
     int w;
     int h;
 
+    /**
+     * A helper function for a_star.
+     */
+    template <typename Heuristic>
+    std::pair<std::deque<Node>, std::deque<Node>> _a_star(Heuristic h);
+
    public:
-    Node start;  /// Starting point of the maze.
+    Node start;
+    Node end;
+
     std::vector<std::vector<Node>> maze;
 
     /**
@@ -87,9 +102,11 @@ class Maze {
      * Find the shortest path to the end point of the maze with dijkstra's algorithm.
      * The algorithm is implemented with a priority queue.
      *
+     * Remark: Dijkstra is a special case of A*, where the heuristics always returns 0.
+     *
      * See also https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm.
      *
-     * @return Two lists, one containing every visited node and one the shortest path.
+     * @return Two queues, one containing every visited node and one the shortest path.
      */
     std::pair<std::deque<Node>, std::deque<Node>> dijkstra();
 
@@ -98,9 +115,10 @@ class Maze {
      *
      * See also https://en.wikipedia.org/wiki/A*_search_algorithm.
      *
-     * @return Two lists, one containing every visited node and one the shortest path.
+     * @param h The heuristics to choose. Possible are Dijkstra (h always returns 0), Manhattan and Euclidean.
+     * @return Two queue, one containing every visited node and one the shortest path.
      */
-    std::pair<std::deque<Node>, std::deque<Node>> a_star();
+    std::pair<std::deque<Node>, std::deque<Node>> a_star(Heuristics h = Heuristics::Euclidean);
 };
 
 #endif  // MAZE_MAZE_H

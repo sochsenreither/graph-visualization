@@ -1,8 +1,6 @@
 #ifndef MAZE_ENGINE_H
 #define MAZE_ENGINE_H
 
-#include <string>
-
 #include "SFML/Graphics.hpp"
 #include "maze.h"
 
@@ -53,6 +51,9 @@ class Engine {
      * Num1: Runs BFS.
      * Num2: Runs DFS.
      * Num3: Runs Dijkstra.
+     * Num4: Runs A* with Manhattan heuristics.
+     * Num5: Runs A* with Euclidean heuristics.
+     * Num6: Runs Bidirectional search.
      *
      */
     void handle_keyboard_input();
