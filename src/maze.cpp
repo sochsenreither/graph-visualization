@@ -21,7 +21,7 @@ void Node::debug_print() const {
               << std::endl;
 }
 
-Maze::Maze(bool random, int width, int height, int prob) {
+Maze::Maze(bool random, int width, int height, int prob) : w{width}, h{height} {
     assert(width > 0);
     assert(height > 0);
 
@@ -56,8 +56,6 @@ Maze::Maze(bool random, int width, int height, int prob) {
         }
     }
 
-    w = width;
-    h = height;
     start = maze[start_x][start_y];
     end = maze[end_x][end_y];
 }

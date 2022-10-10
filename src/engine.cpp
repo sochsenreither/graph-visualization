@@ -4,12 +4,12 @@
 
 #include "fmt/core.h"
 
-Engine::Engine(bool random, int width, int height, int prob) : maze(random, width, height, prob) {
-    r = random;
-    w = width;
-    h = height;
-    p = prob;
-
+Engine::Engine(bool random, int width, int height, int prob)
+    : maze(random, width, height, prob),
+      r{random},
+      w{width},
+      h{height},
+      p{prob} {
     auto const window_w = w * (scale + border_size * 2) + 2 * border_size + 2 * scale;
     auto const hindow_h = h * (scale + border_size * 2) + 2 * border_size + 2 * scale + top_margin;
 
