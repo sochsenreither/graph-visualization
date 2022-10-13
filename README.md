@@ -3,6 +3,7 @@ Maze visualizer is a visualization for different path finding and shortest path 
 - `BFS`
 - `DFS`
 - `Dijkstra`
+- `A*`
 
 It is written in `C++17` and is using `SFML` for graphics.
 
@@ -14,7 +15,7 @@ $ ./build/graph-visualization
 ```
 
 ## Controls
-The size of the maze can be configured in `main.cpp` when constructing the `engine` object. After starting, following inputs are possible:
+The size of the maze can be configured in `main.cpp`. After starting, following inputs are possible:
 - `Left click` + `ctrl` to set a new start
 - `Right click` + `ctrl` to set a new end
 - `Left click` on a node to make it impassable
